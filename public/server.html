@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Servers</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: url('https://files.catbox.moe/93219c.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            background-color: #2a2a3c;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            border-bottom: 3px solid aqua;
+            display: inline-block;
+        }
+
+        .server-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .server-card {
+            background-color: #262637;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            border: 2px solid aqua;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .server-card:hover {
+            background-color: #34344f;
+            transform: scale(1.03);
+        }
+
+        .server-text {
+            text-align: left;
+            width: 100%;
+        }
+
+        .server-text h3 {
+            font-size: 18px;
+            color: #00acee;
+        }
+
+        .server-text p {
+            font-size: 14px;
+            color: #bbb;
+            margin: 3px 0;
+        }
+
+        .server-text span {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .info-btn {
+            background-color: #007bff;
+            color: white;
+            width: 100%;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s ease-in-out;
+            margin-top: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .info-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Popup Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #2a2a3c;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 90%;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal h3 {
+            color: #00acee;
+        }
+
+        .modal p {
+            color: #bbb;
+            margin: 5px 0;
+        }
+
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            width: 100%;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.3s ease-in-out;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .delete-btn:hover {
+            background-color: #e60000;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .close-btn:hover {
+            color: #ff4d4d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2><i class="fas fa-server"></i> List Servers</h2>
+        <div class="server-grid"></div>
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="serverModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h3 id="modalTitle"></h3>
+            <p><strong>Name:</strong> <span id="modalName"></span></p>
+            <p><strong>Description:</strong> <span id="modalDescription"></span></p>
+            <p><strong>Memory:</strong> <span id="modalMemory"></span> MB</p>
+            <p><strong>Disk:</strong> <span id="modalDisk"></span> GB</p>
+            <p><strong>CPU:</strong> <span id="modalCPU"></span> vCPU</p>
+            <button class="delete-btn" id="deleteServerBtn"><i class="fas fa-trash"></i> Delete Server</button>
+        </div>
+    </div>
+
+    <script>
+        async function getServers() {
+            try {
+                const response = await fetch('/api/list-servers');
+                const data = await response.json();
+                const serverGrid = document.querySelector('.server-grid');
+
+                if (!data || !data.data || data.data.length === 0) {
+                    serverGrid.innerHTML = '<p>No servers found.</p>';
+                    return;
+                }
+
+                data.data.forEach(server => {
+                    const serverCard = document.createElement('div');
+                    serverCard.classList.add('server-card');
+                    serverCard.innerHTML = `
+                        <div class="server-text">
+                            <h3>Server ID: ${server.id}</h3>
+                            <p><span>Name:</span> ${server.name}</p>
+                            <button class="info-btn"><i class="fas fa-info-circle"></i> User Info</button>
+                        </div>
+                    `;
+
+                    serverCard.querySelector('.info-btn').onclick = () => openModal(server);
+                    serverGrid.appendChild(serverCard);
+                });
+            } catch (error) {
+                console.error('Error fetching server data:', error);
+            }
+        }
+
+        function openModal(server) {
+            document.getElementById("modalTitle").innerText = `Server ID: ${server.id}`;
+            document.getElementById("modalName").innerText = server.name || "Unknown";
+            document.getElementById("modalDescription").innerText = server.description || "No description";
+            document.getElementById("modalMemory").innerText = server.memory || "0";
+            document.getElementById("modalDisk").innerText = server.disk || "0";
+            document.getElementById("modalCPU").innerText = server.cpu || "0";
+            document.getElementById("serverModal").style.display = "flex";
+            document.getElementById("deleteServerBtn").onclick = () => deleteServer(server.id);
+        }
+        
+
+        async function deleteServer(serverId) {
+            if (!serverId) return alert("❌ ID server tidak valid.");
+        
+            if (confirm(`Apakah kamu yakin ingin menghapus server ID ${serverId}?`)) {
+                try {
+                    const response = await fetch(`/api/delete-server/${serverId}`, {
+                        method: 'DELETE',
+                        headers: { 'Accept': 'application/json' }
+                    });
+        
+                    const result = await response.json();
+                    
+                    if (result.message) {
+                        alert("✅ " + result.message);
+                        document.getElementById("serverModal").style.display = "none";
+                        getServers();
+                    } else {
+                        alert("❌ " + (result.error || "Gagal menghapus server."));
+                    }
+                } catch (error) {
+                    console.error("Terjadi kesalahan:", error);
+                    alert("❌ Terjadi kesalahan saat menghapus server.");
+                }
+            }
+        }
+        
+
+        document.querySelector(".close-btn").onclick = () => {
+            document.getElementById("serverModal").style.display = "none";
+        };
+
+        getServers();
+    </script>
+</body>
+</html>

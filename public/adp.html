@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-image: url('https://files.catbox.moe/93219c.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .container {
+            background: rgba(42, 42, 60, 0.8);
+            width: 90%;
+            max-width: 450px;
+            margin: 80px auto;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+            animation: pop 0.5s ease;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            transition: transform 0.3s;
+        }
+
+        .form-group input:focus {
+            transform: scale(1.05);
+            border-color: #5b5b7c;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background: #5b5b7c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .form-group button:hover {
+            transform: scale(1.05);
+            background: #1d1f20;
+        }
+
+        #response-message {
+            margin-top: 15px;
+            font-size: 1em;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #2a2a3c;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 10px;
+        }
+
+        .modal-content p {
+            margin: 8px 0;
+        }
+
+        .close-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover {
+            background: darkred;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Create Admin</h1>
+    <form id="admin-form">
+        <div class="form-group">
+            <label for="username">Username Admin</label>
+            <input type="text" id="username" required />
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" required />
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Create Admin</button>
+        </div>
+    </form>
+
+    <div id="response-message"></div>
+</div>
+
+<!-- Modal Pop-Up -->
+<div id="admin-modal" class="modal">
+    <div class="modal-content">
+        <h2>Admin Berhasil Dibuat!</h2>
+        <p><strong>ID:</strong> <span id="admin-id"></span></p>
+        <p><strong>Email:</strong> <span id="admin-email"></span></p>
+        <p><strong>Username:</strong> <span id="admin-username"></span></p>
+        <p><strong>Password:</strong> <span id="admin-password"></span></p>
+        <p><strong>Domain:</strong> <span id="admin-domain"></span></p>
+        <button class="close-btn">Tutup</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById('admin-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!username || !password) {
+            return showResponse("❌ Semua input harus diisi!", true);
+        }
+
+        try {
+            const response = await fetch("/create-admin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                return showResponse(`❌ ${data.message || "Terjadi kesalahan!"}`, true);
+            }
+
+            showResponse("✅ Admin berhasil dibuat!", false);
+            showModal(data.admin);
+        } catch (error) {
+            showResponse("❌ Terjadi kesalahan saat menghubungkan ke server!", true);
+        }
+    });
+
+    function showResponse(message, isError) {
+        const responseMessage = document.getElementById('response-message');
+        responseMessage.textContent = message;
+        responseMessage.style.color = isError ? "red" : "green";
+    }
+
+    function showModal(admin) {
+        document.getElementById('admin-id').textContent = admin.id;
+        document.getElementById('admin-email').textContent = admin.email;
+        document.getElementById('admin-username').textContent = admin.username;
+        document.getElementById('admin-password').textContent = admin.password;
+        document.getElementById('admin-domain').textContent = admin.domain;
+
+        document.getElementById('admin-modal').style.display = "flex";
+    }
+
+    document.querySelector('.close-btn').addEventListener('click', function () {
+        document.getElementById('admin-modal').style.display = "none";
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>  <html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Server Create Panel</title>  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">  
+  <style>  
+    /* Global Styles */  
+    body {  
+      margin: 0;  
+      font-family: 'Arial', sans-serif;  
+      background-image: url('https://files.catbox.moe/93219c.jpg');  
+      background-size: cover;  
+      background-position: center;  
+      background-attachment: fixed;  
+      color: #ffffff;  
+      transition: background-color 0.3s, color 0.3s;  
+      overflow-x: hidden;  
+    }  h1, h3, p {  
+  margin: 0;  
+}  
+
+.dashboard {  
+  display: grid;  
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));  
+  padding: 20px;  
+}  
+
+@keyframes rgb-border {  
+  0% { border-color: #ff0000; }  
+  33% { border-color: #00ff00; }  
+  66% { border-color: #0000ff; }  
+  100% { border-color: #ff0000; }  
+}  
+
+@keyframes rgb-glow {  
+  0% { box-shadow: 0 0 10px #ff0000; }  
+  33% { box-shadow: 0 0 10px #00ff00; }  
+  66% { box-shadow: 0 0 10px #0000ff; }  
+  100% { box-shadow: 0 0 10px #ff0000; }  
+}  
+
+@keyframes fadeIn {  
+  from {  
+    opacity: 0;  
+    transform: translateY(-20px);  
+  }  
+  to {  
+    opacity: 1;  
+    transform: translateY(0);  
+  }  
+}  
+
+.card {  
+  background-color: rgba(0, 0, 0, 0.8);  
+  padding: 25px;  
+  border-radius: 15px;  
+  display: flex;  
+  align-items: center;  
+  gap: 20px;  
+  cursor: pointer;  
+  margin: 15px;  
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);  
+  border: 2px solid rgba(255, 255, 255, 0.1);  
+  backdrop-filter: blur(10px);  
+  animation: fadeIn 0.6s ease-out;  
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  
+}  
+
+.card:hover {  
+  transform: translateY(-5px);  
+  border-color: rgba(255, 255, 255, 0.3);  
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);  
+}  
+
+.card:active {  
+  background-color: rgba(0, 0, 0, 0.9);  
+  transform: scale(0.98) translateY(0);  
+  animation: rgb-glow 0.3s ease-out, rgb-border 0.3s ease-out;  
+}  
+
+.card-icon {  
+  font-size: 30px;  
+  color: #00acee;  
+}  
+
+.card-text {  
+  display: flex;  
+  flex-direction: column;  
+  gap: 8px;  
+}  
+
+.card-text h3 {  
+  font-size: 1.25rem;  
+  font-weight: 600;  
+  color: #fff;  
+  letter-spacing: 0.5px;  
+}  
+
+.card-text p {  
+  font-size: 0.95rem;  
+  color: rgba(255, 255, 255, 0.8);  
+  letter-spacing: 0.3px;  
+}  
+
+.section-title {  
+  margin: 30px 10px 20px 10px;  
+  font-size: 20px;  
+  font-weight: bold;  
+  background-color: rgba(0, 0, 0, 0.8);  
+  padding: 10px;  
+  border-radius: 10px;  
+  border: 2px solid #ff0000;  
+  animation: rgb-border 3s linear infinite;  
+  backdrop-filter: blur(5px);  
+}  
+
+.loading-container {  
+  position: fixed;  
+  top: 0;  
+  left: 0;  
+  width: 100%;  
+  height: 100%;  
+  background-color: rgba(0, 0, 0, 0.8);  
+  display: none;  
+  justify-content: center;  
+  align-items: center;  
+  z-index: 100;  
+}  
+
+.anime-loading {  
+  text-align: center;  
+}  
+
+.anime-image {  
+  width: 150px;  
+  height: 150px;  
+  border-radius: 50%;  
+  object-fit: cover;  
+  animation: loadingAnimation 4s ease-in-out infinite;  
+  position: relative;  
+}  
+
+.anime-image::after {  
+  content: '';  
+  position: absolute;  
+  width: 100%;  
+  height: 100%;  
+  border-radius: 50%;  
+  background: linear-gradient(45deg, #00ffff, #ff00ff);  
+  filter: blur(15px);  
+  z-index: -1;  
+  animation: pulseGradient 3s ease-in-out infinite;  
+}  
+
+.anime-text {  
+  color: #fff;  
+  font-size: 20px;  
+  margin: 25px auto 0;  
+  font-family: 'Arial', sans-serif;  
+  text-shadow: 0 0 10px #00ffff;  
+  position: relative;  
+  width: fit-content;  
+  border-right: 2px solid #fff;  
+  white-space: nowrap;  
+  animation: typing 3s steps(10) infinite,  
+            blink-caret 0.75s step-end infinite;  
+  overflow: hidden;  
+}  
+
+@keyframes loadingAnimation {  
+  0% {  
+    transform: scale(0.8) rotate(0deg);  
+    box-shadow:   
+      0 0 20px #00ffff,  
+      0 0 40px #00ffff,  
+      inset 0 0 20px #00ffff;  
+  }  
+  25% {  
+    transform: scale(1.1) rotate(90deg);  
+    box-shadow:   
+      0 0 30px #ff00ff,  
+      0 0 60px #ff00ff,  
+      inset 0 0 30px #ff00ff;  
+  }  
+  50% {  
+    transform: scale(0.9) rotate(180deg);  
+    box-shadow:   
+      0 0 40px #00ffff,  
+      0 0 80px #00ffff,  
+      inset 0 0 40px #00ffff;  
+  }  
+  75% {  
+    transform: scale(1.2) rotate(270deg);  
+    box-shadow:   
+      0 0 30px #ff00ff,  
+      0 0 60px #ff00ff,  
+      inset 0 0 30px #ff00ff;  
+  }  
+  100% {  
+    transform: scale(0.8) rotate(360deg);  
+    box-shadow:   
+      0 0 20px #00ffff,  
+      0 0 40px #00ffff,  
+      inset 0 0 20px #00ffff;  
+  }  
+}  
+
+@keyframes pulseGradient {  
+  0%, 100% {  
+    background: radial-gradient(circle, #00ffff, transparent);  
+    filter: blur(15px);  
+  }  
+  50% {  
+    background: radial-gradient(circle, #ff00ff, transparent);  
+    filter: blur(25px);  
+  }  
+}  
+
+@keyframes typing {  
+  0%, 90%, 100% {  
+    width: 0;  
+  }  
+  30%, 60% {  
+    width: 110px;  
+  }  
+}  
+
+@keyframes blink-caret {  
+  from, to { border-color: transparent }  
+  50% { border-color: #fff }  
+}  
+
+@keyframes spinAnime {  
+  0% { transform: rotate(0deg); }  
+  100% { transform: rotate(360deg); }  
+}  
+
+@keyframes glowText {  
+  from { text-shadow: 0 0 10px #00ffff; }  
+  to { text-shadow: 0 0 20px #ff00ff; }  
+}  
+
+.endpoint {  
+  border-bottom: 3px solid aqua;  
+  margin: 30px 0 15px 0;  
+}
+
+  </style>  
+</head>  
+<body>  
+  <div class="loading-container" id="loading">  
+    <div class="anime-loading">  
+      <img src="https://files.catbox.moe/4l1kxl.jpg" class="anime-image" alt="Loading">  
+      <div class="anime-text">Loading...</div>  
+    </div>  
+  </div>    <div class="section-title"><i class="fas fa-paper-plane"></i> Available Feature</div>  
+  <div class="dashboard">  
+    <div class="card" onclick="openLink('create-adp')">  
+      <i class="fas fa-user-shield card-icon"></i>   
+      <div class="card-text">  
+        <h3>Admin Panel</h3>  
+        <p>Create Admin Panel</p>  
+      </div>  
+    </div>  <div class="card" onclick="openLink('/create-panel')">  
+  <i class="fas fa-dove card-icon"></i>  
+  <div class="card-text">  
+    <h3>Panel</h3>  
+    <p>Create User & Server</p>  
+  </div>  
+</div>  
+
+<div class="card" onclick="openLink('/list-user')">  
+  <i class="fas fa-user card-icon"></i>  
+  <div class="card-text">  
+    <h3>User</h3>  
+    <p>List User & Delete</p>  
+  </div>  
+</div>  
+
+<div class="card" onclick="openLink('/list-server')">  
+  <i class="fas fa-server card-icon"></i>  
+  <div class="card-text">  
+    <h3>Server</h3>  
+    <p>List Server & Delete</p>  
+  </div>  
+</div>  
+
+<div class="card" onclick="openLink('/nodes')">  
+  <i class="fas fa-server card-icon"></i>  
+  <div class="card-text">  
+    <h3>Spesifikasi</h3>  
+    <p>Spesifikasi Server</p>  
+  </div>  
+</div>
+
+  </div>    <script>  
+    function openLink(url) { 
+document.getElementById('loading').style.display = 'flex';  
+      setTimeout(function() {  
+        window.location.href = url;  
+      }, 3000);  
+    }  
+  
+    window.onload = function() {  
+      alert('SC Web ini dijual! 💻✨ Harga murah aja, minat? Chat admin ya! 📩 6281249578370');  
+      showLoading();  
+    }  
+  
+    function showLoading() {  
+      document.getElementById('loading').style.display = 'flex';  
+      setTimeout(function() {  
+        document.getElementById('loading').style.display = 'none';  
+      }, 3000);  
+    }  
+  </script>  </body>  
+</html>
