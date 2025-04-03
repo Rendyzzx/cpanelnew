@@ -23,7 +23,7 @@
         color: #333;  
         transition: background-color 0.3s, color 0.3s;  
     }  
-  
+
     /* Header */  
     header {  
         width: 100%;  
@@ -47,11 +47,11 @@
         text-align: center;  
         transition: transform 0.3s ease;  
     }  
-  
+
     .container:hover {  
         transform: translateY(-5px);  
     }  
-  
+
     .container img {  
         width: 100%;  
         height: 220px;  
@@ -59,41 +59,67 @@
         border-radius: 10px;  
         margin-bottom: 15px;  
     }  
-  
+
     h1 {  
         font-size: 1.8em;  
         font-weight: 600;  
         color: #ffffff;  
         margin-bottom: 15px;  
     }  
-  
+
     .form-group {  
         margin-bottom: 20px;  
         text-align: left;  
     }  
-  
+
     .form-group label {  
         font-weight: 500;  
         color: #ffffff;  
         display: block;  
         margin-bottom: 8px;  
     }  
-  
+
     .form-group input, .form-group select {  
         width: 100%;  
-        padding: 12px;  
+        padding: 15px;  
         font-size: 1em;  
-        border: 2px solid #ddd;  
-        border-radius: 8px;  
+        border: 2px solid rgba(255, 105, 180, 0.3);  
+        border-radius: 12px;  
         outline: none;  
-        transition: border 0.3s ease-in-out;  
+        transition: all 0.3s ease-in-out;  
+        background: rgba(0, 0, 0, 0.2);
+        color: white;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }  
-  
+
+    .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
     .form-group input:focus, .form-group select:focus {  
-        border-color: #00bfff;  
-        box-shadow: 0 0 8px rgba(0, 191, 255, 0.5);  
+        border-color: #ff69b4;  
+        box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+        transform: translateY(-2px);
+        background: rgba(0, 0, 0, 0.3);
     }  
-  
+
+    .form-group select {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, #ff69b4 50%),
+                         linear-gradient(135deg, #ff69b4 50%, transparent 50%);
+        background-position: calc(100% - 20px) center,
+                           calc(100% - 15px) center;
+        background-size: 5px 5px,
+                        5px 5px;
+        background-repeat: no-repeat;
+    }
+
+    .form-group select option {
+        background: #2a2a3c;
+        color: white;
+    }  
+
     .form-group button {  
         background: #5b5b7c;  
         color: white;  
@@ -105,11 +131,11 @@
         cursor: pointer;  
         transition: background 0.3s ease-in-out;  
     }  
-  
+
     .form-group button:hover {  
         background: #1d1f20;  
     }  
-  
+
     /* Footer */  
     footer {  
         background: #222;  
@@ -120,24 +146,24 @@
         bottom: 0;  
         width: 100%;  
     }  
-  
+
     .footer-content {  
         display: flex;  
         justify-content: center;  
         align-items: center;  
         gap: 10px;  
     }  
-  
+
     .footer-content p {  
         font-size: 14px;  
     }  
-  
+
     .footer-content a {  
         color: #00bfff;  
         text-decoration: none;  
         font-weight: bold;  
     }  
-  
+
     .footer-content a:hover {  
         color: #009cd9;  
     }  
@@ -276,6 +302,25 @@ transition: color 0.3s ease-in-out;
 .modal-content a:hover {
 color: #ff4d4d;
 }
+.domain-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+.domain-actions button {
+  background-color: #ff69b4;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.domain-actions button:hover {
+  background-color: #e91e63;
+}
 </style>
 
 </head>  
@@ -338,7 +383,11 @@ color: #ff4d4d;
         <p><strong>Disk:</strong> <span id="modal-disk"></span></p>  
         <p><strong>CPU:</strong> <span id="modal-cpu"></span></p>  
         <p><strong>Email:</strong> <span id="modal-email"></span></p><br><br>  
-        <h4>Terimakasih Telah Mempercayai Layanan Kami</h4>  
+        <h4>Terimakasih Telah Mempercayai Layanan Kami</h4>
+        <div class="domain-actions">
+          <button onclick="copyDomain(event)">Copy Domain</button>
+          <button onclick="openDomain()">Open Domain</button>
+        </div>
         <a href="#">&copy; Takanashi Hoshino</a>  
     </div>  
 </div>  <footer id="footer">  
@@ -352,25 +401,25 @@ color: #ff4d4d;
     document.addEventListener("DOMContentLoaded", () => {  
         const modal = document.getElementById("serverModal");  
         const closeModal = document.querySelector(".close");  
-      
+
         closeModal.onclick = function () {  
             modal.style.display = "none";  
         };  
-      
+
         window.onclick = function (event) {  
             if (event.target === modal) {  
                 event.stopPropagation();  
             }  
         };  
-      
+
         document.addEventListener("keydown", function (event) {  
             if (event.key === "Escape") {  
                 event.preventDefault();  
             }  
         });  
     });  
-      
-      
+
+
   const form = document.getElementById('server-form');  
   const responseMessage = document.getElementById('response-message');  
   const modal = document.getElementById('serverModal');  
@@ -423,6 +472,33 @@ color: #ff4d4d;
   }  
   closeModal.onclick = function() {  
     modal.style.display = "none";  
-  };  
+  };
+
+  function copyDomain(event) {
+    const domain = document.getElementById('modal-domain').textContent;
+    navigator.clipboard.writeText(domain);
+
+    // Show feedback
+    const btn = event.currentTarget;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i>';
+    btn.style.background = '#4CAF50';
+
+    setTimeout(() => {
+      btn.innerHTML = originalContent;
+      btn.style.background = '#ff69b4';
+    }, 1000);
+  }
+
+  function openDomain() {
+    const domain = document.getElementById('modal-domain').textContent;
+    if (domain && domain !== 'N/A') {
+      window.open(domain, '_blank');
+    }
+  }
+
+  function closeNotification(button) {
+
+  }
 </script>  </body>  
-</html>  
+</html>
