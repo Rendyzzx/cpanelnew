@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 const port = 3000;
 
 const domain = 'https://hoshi.qpy.my.id'; //DOMAIN PANEL
-const apikey = 'ptla_K3mHcsgRkzYME9bs6RKqfwbOMCDRz8iJuQuMS6DBecl'; // PTLA PANEL
+const apikey = 'ptla_1pz86nhBH56nQnPdn9cVDKNoQ8kBkmGqSjQVmP99Y3R'; // PTLA PANEL
 
 app.use(express.static('public'));
 
