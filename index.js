@@ -8,8 +8,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const port = 3000;
 
-const domain = 'https://takanashi.qoupayhost.web.id'; //DOMAIN PANEL
-const apikey = 'ptla_vsdlR9W6E1jpnFxjKU2LTfCHXhapIzTCPisQ6Qs0d3i'; // PTLA PANEL
+const domain = 'https://hoshi.qpy.my.id'; //DOMAIN PANEL
+const apikey = 'ptla_K3mHcsgRkzYME9bs6RKqfwbOMCDRz8iJuQuMS6DBecl'; // PTLA PANEL
 
 app.use(express.static('public'));
 
